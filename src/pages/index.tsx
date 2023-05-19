@@ -7,9 +7,11 @@ import Header from "../components/Header";
 import { useUser } from "@clerk/nextjs";
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
-
   const { isLoaded, isSignedIn, user } = useUser();
+
+  const { data } = api.posts.getAll.useQuery();
+
+  console.log(data);
 
   if (!isLoaded) {
     return null;
@@ -28,8 +30,15 @@ const Home: NextPage = () => {
             <Header />
           ) : (
             <div>
-              <Header />
-              <h1>Hello {user.fullName}</h1>
+              <div>
+                <Header />
+                <h1>Hello {user.fullName}</h1>
+              </div>
+              <div>
+                {data?.map((post) => (
+                  <div key={post.id}>{post.content}</div>
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -37,5 +46,7 @@ const Home: NextPage = () => {
     </>
   );
 };
+
+//! STOP AT 28:43 - https://www.youtube.com/watch?v=YkOSUVzOAA4&t=1135s
 
 export default Home;
