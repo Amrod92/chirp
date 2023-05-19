@@ -11,7 +11,7 @@ const Home: NextPage = () => {
 
   const { isLoaded, isSignedIn, user } = useUser();
 
-  if (!isLoaded || !isSignedIn) {
+  if (!isLoaded) {
     return null;
   }
 
@@ -23,9 +23,15 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <Header />
         <div>
-          <h1>Hello {user.fullName}</h1>
+          {!isSignedIn ? (
+            <Header />
+          ) : (
+            <div>
+              <Header />
+              <h1>Hello {user.fullName}</h1>
+            </div>
+          )}
         </div>
       </main>
     </>
