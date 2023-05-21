@@ -1,17 +1,69 @@
 import { type NextPage } from "next";
 import Head from "next/head";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 
-import { api } from "~/utils/api";
+import { RouterOutputs, api } from "~/utils/api";
 
 import Header from "../components/Header";
 import { useUser } from "@clerk/nextjs";
+import Image from "next/image";
+
+const CreatePostWizard = () => {
+  const { user } = useUser();
+
+  if (!user) return null;
+
+  return (
+    <div className="flex w-full gap-3">
+      <Image
+        src={user.profileImageUrl}
+        alt="Profile Image"
+        className="rounded-full"
+        width={56}
+        height={56}
+      />
+      <input
+        placeholder="What's on your mind?"
+        className="grow bg-transparent outline-none"
+      />
+    </div>
+  );
+};
+
+type PostWithUser = RouterOutputs["posts"]["getAll"][number];
+
+const PostView = (props: PostWithUser) => {
+  const { post, author } = props;
+
+  return (
+    <div key={post.id} className="flex gap-3 border-b border-slate-400 p-4">
+      <Image
+        src={author.profileImageUrl}
+        alt={`@${author.username}'s profile picture`}
+        className="rounded-full"
+        width={56}
+        height={56}
+      />
+      <div className="flex flex-col">
+        <div className="flex gap-1 text-slate-300">
+          <span>{`@${author.username}`}</span>
+          <span className="font-thin">{`· ${dayjs(
+            post.createdAt
+          ).fromNow()}`}</span>
+        </div>
+        <span>{post.content}</span>
+      </div>
+    </div>
+  );
+};
 
 const Home: NextPage = () => {
+  dayjs.extend(relativeTime);
+
   const { isLoaded, isSignedIn } = useUser();
 
   const { data, isLoading } = api.posts.getAll.useQuery();
-
-  console.log(data);
 
   if (!isLoaded) {
     return null;
@@ -41,14 +93,12 @@ const Home: NextPage = () => {
             </div>
             <main className="flex h-screen justify-center">
               <div className="w-full border-x border-slate-400 md:max-w-2xl">
+                <div className="m-5">
+                  <CreatePostWizard />
+                </div>
                 <div className="flex flex-col">
-                  {[...data, ...data]?.map((post) => (
-                    <div
-                      key={post.id}
-                      className="border-b border-slate-400 p-8"
-                    >
-                      {post.content}
-                    </div>
+                  {[...data, ...data]?.map((fullPost) => (
+                    <PostView {...fullPost} key={fullPost.post.id} />
                   ))}
                 </div>
               </div>
@@ -59,5 +109,7 @@ const Home: NextPage = () => {
     </>
   );
 };
+
+//! STOP AT 37:33 https://www.youtube.com/watch?v=YkOSUVzOAA4&t=1135s
 
 export default Home;
