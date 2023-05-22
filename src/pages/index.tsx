@@ -1,13 +1,14 @@
 import { type NextPage } from "next";
 import Head from "next/head";
+import Image from "next/image";
+import { useUser } from "@clerk/nextjs";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
 import { RouterOutputs, api } from "~/utils/api";
 
 import Header from "../components/Header";
-import { useUser } from "@clerk/nextjs";
-import Image from "next/image";
+import { LoadingPage } from "~/components/loading";
 
 const CreatePostWizard = () => {
   const { user } = useUser();
@@ -58,20 +59,30 @@ const PostView = (props: PostWithUser) => {
   );
 };
 
+const Feed = () => {
+  const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
+
+  if (postsLoading) return <LoadingPage />;
+
+  if (!data) return <div>Something went wrong</div>;
+
+  return (
+    <div className="flex flex-col">
+      {[...data, ...data]?.map((fullPost) => (
+        <PostView {...fullPost} key={fullPost.post.id} />
+      ))}
+    </div>
+  );
+};
+
 const Home: NextPage = () => {
   dayjs.extend(relativeTime);
 
-  const { isLoaded, isSignedIn } = useUser();
+  const { isLoaded: userLoaded, isSignedIn } = useUser();
 
-  const { data, isLoading } = api.posts.getAll.useQuery();
+  api.posts.getAll.useQuery();
 
-  if (!isLoaded) {
-    return null;
-  }
-
-  if (isLoading) return <div>Loading...</div>;
-
-  if (!data) return <div>Something went wrong</div>;
+  if (!userLoaded) return <div />;
 
   return (
     <>
@@ -96,11 +107,7 @@ const Home: NextPage = () => {
                 <div className="m-5">
                   <CreatePostWizard />
                 </div>
-                <div className="flex flex-col">
-                  {[...data, ...data]?.map((fullPost) => (
-                    <PostView {...fullPost} key={fullPost.post.id} />
-                  ))}
-                </div>
+                <Feed />
               </div>
             </main>
           </div>
@@ -109,7 +116,5 @@ const Home: NextPage = () => {
     </>
   );
 };
-
-//! STOP AT 37:33 https://www.youtube.com/watch?v=YkOSUVzOAA4&t=1135s
 
 export default Home;
