@@ -67,7 +67,7 @@ create: privateProcedure
 
     const { success } = await ratelimit.limit(authorId);
 
-    if(!success) throw new TRPCError({code: "TOO_MANY_REQUESTS", message: "You have exceeded your rate limit"}
+    if(!success) throw new TRPCError({code: "TOO_MANY_REQUESTS", message: "You have exceeded your rate limit"});
 
     const post = await ctx.prisma.post.create({
       data: {
