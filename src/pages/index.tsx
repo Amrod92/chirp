@@ -11,6 +11,7 @@ import Header from "../components/Header";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
+import { PageLayout } from "~/components/layout";
 
 const CreatePostWizard = () => {
   const { user } = useUser();
@@ -142,14 +143,12 @@ const Home: NextPage = () => {
             <div className="border-b border-slate-400">
               <Header />
             </div>
-            <main className="flex h-screen justify-center">
-              <div className="w-full border-x border-slate-400 md:max-w-2xl">
-                <div className="m-5">
-                  <CreatePostWizard />
-                </div>
-                <Feed />
+            <PageLayout>
+              <div className="m-5">
+                <CreatePostWizard />
               </div>
-            </main>
+              <Feed />
+            </PageLayout>
           </div>
         )}
       </div>

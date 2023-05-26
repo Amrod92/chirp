@@ -15,11 +15,9 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
         <title>@{username} Profile</title>
       </Head>
 
-      <main className="flex h-screen justify-center">
-        <div className="w-full border-x border-slate-400 md:max-w-2xl">
-          {data.username}
-        </div>
-      </main>
+      <PageLayout>
+        <div>{data.username}</div>
+      </PageLayout>
     </>
   );
 };
@@ -28,6 +26,7 @@ import { createServerSideHelpers } from "@trpc/react-query/server";
 import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 import superjson from "superjson";
+import { PageLayout } from "~/components/layout";
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const ssg = createServerSideHelpers({
