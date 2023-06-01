@@ -104,8 +104,13 @@ const Home: NextPage = () => {
     <>
       <div>
         {!isSignedIn ? (
-          <div className="border-b border-slate-400">
-            <Header />
+          <div>
+            <div className="border-b border-slate-400">
+              <Header />
+            </div>
+            <PageLayout>
+              <Feed />
+            </PageLayout>
           </div>
         ) : (
           <div>
